@@ -28,11 +28,11 @@ const celebs = [];
     await page.goto(celebComedianList);
     const names = await page.evaluate(
         () => Array.from(document.querySelectorAll('div ul li a[title]'))
-        .map(element => element.textContent)
+        .map(element => element.textContent.split(' ').join('_'))
     );
 
     celebs.push(names);
-    //console.log('celebs', celebs.map((celeb) => celeb));
+    console.log('celebs', celebs.map((celeb) => celeb));
 
     //ENDPOINTS
     /* GET: COMEDIAN CELEBS */
@@ -41,7 +41,7 @@ const celebs = [];
         res.send(names)
     });
 
-    //GET CELEB BIRTH DATA 
+    /* GET: CELEB BIRTH DATA BY NAME (?NAME=) */
     app.get('/data', async (req, res) => {
         //console.log(`https://en.wikipedia.org/api/rest_v1/page/html/${req.query.name}?redirect=false`);
         const browser = await puppeteer.launch();
