@@ -1,9 +1,11 @@
+require('events').EventEmitter.prototype._maxListeners = 0;
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const CORS = require('cors');
 //PUPPETEER 🐱‍💻
 const puppeteer = require('puppeteer');
+process.setMaxListeners(Infinity);
 //MIDDLEWARE
 app.use(bodyParser.json());
 app.use(CORS());
@@ -14,11 +16,10 @@ app.listen(PORT, () => {
     console.log(`***Server is listening on ${PORT}***`);
 });
 
-const celebs = [];
+const celebData = [];
 
 //HEADLESS CHROME
 (async () => {
-
     //INIT PUPPETEER
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -31,18 +32,35 @@ const celebs = [];
         .map(element => element.textContent.split(' ').join('_'))
     );
 
-    celebs.push(names);
-    console.log('celebs', celebs.map((celeb) => celeb));
+    //MAP ALL CELEB INFO BY NAME
+    const results = names.slice(0, 100).map(async (name) => { 
+        const page = await browser.newPage();
+        console.log(name)
+        await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
+        const data = await page.evaluate(
+            () => document.querySelector('span .bday') ? document.querySelector('span .bday').textContent : null
+        )
+        return ({name:name, data: data})
+    })
+
+    //RETURN ALL PROMISES 
+    Promise.all(results)
+        .then((complete) => {
+            console.log(complete) 
+            celebData.push(complete)
+        })
+        .catch((err) => console.log('ERROR :', err))
+    //console.log(names)
 
     //ENDPOINTS
     /* GET: COMEDIAN CELEBS */
     app.get('/comedians', (req, res) => {
-        console.log(names)
+        //console.log(names)
         res.send(names)
     });
 
     /* GET: CELEB BIRTH DATA BY NAME (?NAME=) */
-    app.get('/data', async (req, res) => {
+    app.get('/byname', async (req, res) => {
         //console.log(`https://en.wikipedia.org/api/rest_v1/page/html/${req.query.name}?redirect=false`);
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
@@ -50,10 +68,15 @@ const celebs = [];
         const data = await page.evaluate(
             () => document.querySelector('span .bday').textContent
         )
-        console.log(data)
+        //console.log(data)
         res.send(data)
 
     });
 
-    await browser.close();
+    /* GET: ALL CELEB DATA */
+    app.get('/all', async (req, res) => {
+        //console.log(celebData)
+        res.send(celebData)
+        
+    })
 })();
