@@ -32,7 +32,7 @@ const celebData = [];
         .map(element => element.textContent.split(' ').join('_'))
     );
 
-    //MAP ALL CELEB INFO BY NAME
+    //ASYNC MAP ALL CELEB INFO BY NAME
     const results = names.slice(0, 100).map(async (name) => { 
         const page = await browser.newPage();
         console.log(name)
@@ -40,7 +40,10 @@ const celebData = [];
         const data = await page.evaluate(
             () => document.querySelector('span .bday') ? document.querySelector('span .bday').textContent : null
         )
-        return ({name:name, data: data})
+        const death = await page.evaluate(
+            () => Array.from(document.querySelectorAll('body section table tbody tr th')).find(th => th.textContent.includes('Died'))
+        )
+        return ({name:name, born: data, died: death})
     })
 
     //RETURN ALL PROMISES 
