@@ -40,7 +40,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     );
 
     //ASYNC MAP ALL CELEB INFO BY NAME
-    let results = names.slice(0, 100).map(async (name) => { 
+    let results = names.slice(0, 20).map(async (name) => { 
         const page = await browser.newPage();
         await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
         const data = await page.evaluate(
