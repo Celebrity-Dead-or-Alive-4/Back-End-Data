@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "back-end-data",
   "version": "1.0.0",
   "description": "Nodejs & Puppeteer",
@@ -20,4 +21,29 @@
   },
   "author": "Tyler Spaulding",
   "license": "ISC"
+=======
+  "name": "celebs",
+  "version": "1.0.0",
+  "description": "celebrity birth/ death information",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Celebrity-Dead-or-Alive-4/Back-End-Data.git"
+  },
+  "author": "Tyler Spaulding",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Celebrity-Dead-or-Alive-4/Back-End-Data/issues"
+  },
+  "homepage": "https://github.com/Celebrity-Dead-or-Alive-4/Back-End-Data#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "puppeteer": "^2.0.0"
+  }
+>>>>>>> 24537bba4d92c301089bbdbb25c1ff31f7e3b208
 }
