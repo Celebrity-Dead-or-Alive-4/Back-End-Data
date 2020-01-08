@@ -83,7 +83,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         let job = await workQueue.add({data: results})
         //START PROCESS
         workQueue.process(function(job) {
-            return Promise.resolve()
+            return Promise.all(job)
         })
         //RETURN DATA ON COMPLETION
         workQueue.on('completed', (job, data) => {
