@@ -85,7 +85,7 @@ let workQueue = new Queue('work', REDIS_URL);
                     .then(complete => res.send(complete))
                     .catch(err => res.send('ERROR: ', err))
         }); 
-        let status = await workQueue.getJob(job.id);
-        res.send(status.getState())
+        let data = await workQueue.getJob(job.getData);
+        res.send({data: data})
     })
 })();
