@@ -55,7 +55,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         return ({name:name, born: data, died: death})  
     })
 
-    workQueue.add(results())
+    workQueue.add(results)
 
     //!ENDPOINTS
     /* GET: COMEDIAN CELEBS */
