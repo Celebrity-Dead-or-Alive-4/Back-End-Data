@@ -75,6 +75,6 @@ app.listen(PORT, () => {
             //console.log(complete) 
             res.send(complete)
         })
-        .catch((err) => console.log('ERROR :', err))     
+        .catch((err) => res.send('ERROR :', err))     
     })
 })();
