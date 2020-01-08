@@ -52,7 +52,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
             () => Array.from(document.querySelectorAll('body section table tbody tr th'))
                 .find(th => th.textContent.includes('Died'))
         )
-        return ({job: job.id, name:name, born: data, died: death})  
+        return ({name:name, born: data, died: death})  
     })
 
     workQueue.add(results())
