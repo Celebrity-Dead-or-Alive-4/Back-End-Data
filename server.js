@@ -49,13 +49,7 @@ const celebData = [];
     Promise.all(results)
         .then((complete) => {
             //console.log(complete) 
-            //celebData.push(complete)
-            /* GET: ALL CELEB DATA */
-            app.get('/all', (req, res) => {
-                //console.log(celebData)
-                res.send(complete)
-                
-            })
+            celebData.push(complete)
         })
         .catch((err) => console.log('ERROR :', err))
     //console.log(names)
@@ -80,4 +74,11 @@ const celebData = [];
         res.send(data)
 
     });
+
+    /* GET: ALL CELEB DATA */
+    app.get('/all', (req, res) => {
+        //console.log(celebData)
+        res.send(celebData)
+        
+    })
 })();
