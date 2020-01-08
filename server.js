@@ -81,13 +81,13 @@ let workQueue = new Queue('work', REDIS_URL);
         //console.log(celebData)
         //ADD PROMISE TO QUE
         let job = await workQueue.add({
-            getData: () => Promise.all(results)
-                    .then(complete => res.send(complete))
-                    .catch(err => res.send('ERROR: ', err))
+            getData: []
         })
         //START PROCESS
         workQueue.process(async (job) => {
-            return doSomething(job.data);
+            return Promise.all(results)
+                .then(complete => res.send({data: complete, job: job.data}))
+                .catch(err => res.send('ERROR: ', err))
         })
         //RETURN DATA ON COMPLETION
         workQueue.on('completed', (job, result) => {
