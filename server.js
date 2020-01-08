@@ -55,6 +55,8 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         )
         return ({job: job.id, name:name, born: data, died: death})
         })
+        .then((res) => {return res})
+        .catch((err) => console.log(err))
     })
 
     //!ENDPOINTS
