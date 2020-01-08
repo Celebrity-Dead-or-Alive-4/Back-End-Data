@@ -40,8 +40,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     );
 
     //ASYNC MAP ALL CELEB INFO BY NAME
-    let results = () => names.slice(0, 100).map((name) => { 
-        workQueue.process(async (job) => {
+    let results = names.slice(0, 100).map(async (name) => { 
         const page = await browser.newPage();
         await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
         const data = await page.evaluate(
@@ -54,9 +53,6 @@ let workers = process.env.WEB_CONCURRENCY || 2;
                 .find(th => th.textContent.includes('Died'))
         )
         return ({job: job.id, name:name, born: data, died: death})
-        })
-        .then((res) => {return res})
-        .catch((err) => console.log(err))
     })
 
     //!ENDPOINTS
@@ -84,13 +80,11 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     app.get('/all', async (req, res) => {
         //console.log(celebData)
         //ADD PROMISE TO QUE
-        let job = await workQueue.add({data: []})
+        let job = await workQueue.add({data: results()})
         //START PROCESS
-        // workQueue.process(async (job) => {
-        //     return Promise.all(results)
-        //         .then(complete => res.send({data: complete, job: job.data}))
-        //         .catch(err => res.send('ERROR: ', err))
-        // })
+        workQueue.process(function(job) {
+            return Promise.resolve()
+        })
         //RETURN DATA ON COMPLETION
         workQueue.on('completed', (job, data) => {
         console.log(`Job completed with result ${data}`);
