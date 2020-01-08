@@ -84,7 +84,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     app.get('/all', async (req, res) => {
         //console.log(celebData)
         //ADD PROMISE TO QUE
-        let job = await workQueue.add(results())
+        let job = await workQueue.add({data: results()})
         //START PROCESS
         // workQueue.process(async (job) => {
         //     return Promise.all(results)
