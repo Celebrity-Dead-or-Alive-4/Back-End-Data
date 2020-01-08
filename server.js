@@ -40,7 +40,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     );
 
     //ASYNC MAP ALL CELEB INFO BY NAME
-    let results = names.slice(0, 20).map(async (name) => { 
+    const results = () => names.slice(0, 100).map(async (name) => { 
         const page = await browser.newPage();
         await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
         const data = await page.evaluate(
@@ -52,8 +52,10 @@ let workers = process.env.WEB_CONCURRENCY || 2;
             () => Array.from(document.querySelectorAll('body section table tbody tr th'))
                 .find(th => th.textContent.includes('Died'))
         )
-        return ({name:name, born: data, died: death})
+        return ({job: job.id, name:name, born: data, died: death})  
     })
+
+    workQueue.add(results())
 
     //!ENDPOINTS
     /* GET: COMEDIAN CELEBS */
@@ -79,21 +81,16 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     /* GET: ALL CELEB DATA */
     app.get('/all', async (req, res) => {
         //console.log(celebData)
-        Promise.all(results)
-            .then((data) => {
-                res.send(data)
-            })
-            .catch((err) => console.log('ERROR:', err))
-        // ADD PROMISE TO QUE
-        // let job = await workQueue.add(results)
-        // //START PROCESS
-        // workQueue.process(function(job) {
-        //     return Promise.all(job)
-        // })
-        // //RETURN DATA ON COMPLETION
-        // workQueue.on('completed', (job, data) => {
-        // console.log(`Job completed with result ${data}`);
-        // res.send({data: data})
-        // })
+        //START PROCESS
+        workQueue.process(async (job) => {
+            return Promise.all(results)
+                .then(complete => res.send({data: complete, job: job.id}))
+                .catch(err => res.send('ERROR: ', err))
+        })
+        //RETURN DATA ON COMPLETION
+        workQueue.on('completed', (job, data) => {
+        console.log(`Job completed with result ${data}`);
+        res.send({data: data})
+        })
     })
 })();
