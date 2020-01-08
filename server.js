@@ -41,7 +41,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
 
     //ASYNC MAP ALL CELEB INFO BY NAME
     const results = () => names.slice(0, 100).map(async (name) => { 
-        workQueue.process(async (job) => {
+        workQueue.process((job) => {
         const page = await browser.newPage();
         await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
         const data = await page.evaluate(
@@ -56,8 +56,6 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         return ({job: job.id, name:name, born: data, died: death})
         })
     })
-    .then(res => console.log(res))
-    .catch(err => console.log(err))
 
     //!ENDPOINTS
     /* GET: COMEDIAN CELEBS */
