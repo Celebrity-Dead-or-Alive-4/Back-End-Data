@@ -93,9 +93,9 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         //         .catch(err => res.send('ERROR: ', err))
         // })
         //RETURN DATA ON COMPLETION
-        workQueue.on('completed', (job, result) => {
+        workQueue.on('completed', (job, data) => {
         console.log(`Job completed with result ${result}`);
-        res.send({data: result})
+        res.send({data: data})
         })
     })
 })();
