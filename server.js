@@ -79,13 +79,20 @@ let workQueue = new Queue('work', REDIS_URL);
     /* GET: ALL CELEB DATA */
     app.get('/all', async (req, res) => {
         //console.log(celebData)
-        //RETURN ALL PROMISES FROM QUE
+        //ADD PROMISE TO QUE
         let job = await workQueue.add({
             getData: () => Promise.all(results)
                     .then(complete => res.send(complete))
                     .catch(err => res.send('ERROR: ', err))
-        }); 
-        let data = await workQueue.getJob(job.getData);
-        res.send({data: data})
+        })
+        //START PROCESS
+        workQueue.process(async (job) => {
+            return doSomething(job.data);
+        })
+        //RETURN DATA ON COMPLETION
+        workQueue.on('completed', (job, result) => {
+        console.log(`Job completed with result ${result}`);
+        res.send({data: result})
+        })
     })
 })();
