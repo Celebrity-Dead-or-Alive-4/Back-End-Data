@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const CORS = require('cors');
 //PUPPETEER 🐱‍💻
 const puppeteer = require('puppeteer');
-process.setMaxListeners(Infinity);
 //MIDDLEWARE
 app.use(bodyParser.json());
 app.use(CORS());
