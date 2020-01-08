@@ -53,7 +53,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
             () => Array.from(document.querySelectorAll('body section table tbody tr th'))
                 .find(th => th.textContent.includes('Died'))
         )
-        return ({name:name, born: data, died: death})
+        return ({job: job.id, name:name, born: data, died: death})
         })
     })
 
@@ -82,10 +82,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     app.get('/all', async (req, res) => {
         //console.log(celebData)
         //ADD PROMISE TO QUE
-        let job = await workQueue.add({
-            getData: []
-        })
-        results()
+        let job = await workQueue.add(results())
         //START PROCESS
         // workQueue.process(async (job) => {
         //     return Promise.all(results)
