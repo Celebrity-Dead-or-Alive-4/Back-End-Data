@@ -22,6 +22,9 @@ app.listen(PORT, () => {
 let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 let workQueue = new Queue('work', REDIS_URL);
 
+//WORKERS
+let workers = process.env.WEB_CONCURRENCY || 2;
+
 //HEADLESS CHROME
 (async () => {
     //INIT PUPPETEER
@@ -38,8 +41,8 @@ let workQueue = new Queue('work', REDIS_URL);
 
     //ASYNC MAP ALL CELEB INFO BY NAME
     const results = names.slice(0, 100).map(async (name) => { 
+        workQueue.process(async (job) => {
         const page = await browser.newPage();
-        //jeroconsole.log(name)
         await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
         const data = await page.evaluate(
             () => document.querySelector('span .bday') ? 
@@ -51,11 +54,10 @@ let workQueue = new Queue('work', REDIS_URL);
                 .find(th => th.textContent.includes('Died'))
         )
         return ({name:name, born: data, died: death})
+        })
     })
 
-    //console.log(names)
-
-    //ENDPOINTS
+    //!ENDPOINTS
     /* GET: COMEDIAN CELEBS */
     app.get('/comedians', (req, res) => {
         //console.log(names)
@@ -83,12 +85,13 @@ let workQueue = new Queue('work', REDIS_URL);
         let job = await workQueue.add({
             getData: []
         })
+        results()
         //START PROCESS
-        workQueue.process(async (job) => {
-            return Promise.all(results)
-                .then(complete => res.send({data: complete, job: job.data}))
-                .catch(err => res.send('ERROR: ', err))
-        })
+        // workQueue.process(async (job) => {
+        //     return Promise.all(results)
+        //         .then(complete => res.send({data: complete, job: job.data}))
+        //         .catch(err => res.send('ERROR: ', err))
+        // })
         //RETURN DATA ON COMPLETION
         workQueue.on('completed', (job, result) => {
         console.log(`Job completed with result ${result}`);
