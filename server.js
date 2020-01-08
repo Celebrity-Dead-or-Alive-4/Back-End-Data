@@ -20,7 +20,7 @@ const celebData = [];
 //HEADLESS CHROME
 (async () => {
     //INIT PUPPETEER
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
     const page = await browser.newPage();
     const celebComedianList = 'https://en.wikipedia.org/wiki/List_of_comedians' 
 
