@@ -80,7 +80,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     app.get('/all', async (req, res) => {
         //console.log(celebData)
         //ADD PROMISE TO QUE
-        let job = await workQueue.add({data: results})
+        let job = await workQueue.add(results)
         //START PROCESS
         workQueue.process(function(job) {
             return Promise.all(job)
