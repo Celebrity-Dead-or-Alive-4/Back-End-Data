@@ -15,6 +15,10 @@ app.listen(PORT, () => {
     console.log(`***Server is listening on ${PORT}***`);
 });
 
+//WEB PROCESS
+let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
+let workQueue = new Queue('work', REDIS_URL);
+
 //HEADLESS CHROME
 (async () => {
     //INIT PUPPETEER
@@ -35,10 +39,13 @@ app.listen(PORT, () => {
         //jeroconsole.log(name)
         await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
         const data = await page.evaluate(
-            () => document.querySelector('span .bday') ? document.querySelector('span .bday').textContent : null
+            () => document.querySelector('span .bday') ? 
+                document.querySelector('span .bday').textContent : 
+                null
         )
         const death = await page.evaluate(
-            () => Array.from(document.querySelectorAll('body section table tbody tr th')).find(th => th.textContent.includes('Died'))
+            () => Array.from(document.querySelectorAll('body section table tbody tr th'))
+                .find(th => th.textContent.includes('Died'))
         )
         return ({name:name, born: data, died: death})
     })
@@ -69,12 +76,13 @@ app.listen(PORT, () => {
     /* GET: ALL CELEB DATA */
     app.get('/all', (req, res) => {
         //console.log(celebData)
-        //RETURN ALL PROMISES 
-        Promise.all(results)
-        .then((complete) => {
-            //console.log(complete) 
-            res.send(complete)
-        })
-        .catch((err) => res.send('ERROR :', err))     
+        //RETURN ALL PROMISES FROM QUE
+        let job = await workQueue.add({
+            getData: () => Promise.all(results)
+                    .then(complete => res.send(complete))
+                    .catch(err => res.send('ERROR: ', err))
+        }); 
+        let status = await workQueue.getJob(job.id);
+        res.send(status.getState())
     })
 })();
