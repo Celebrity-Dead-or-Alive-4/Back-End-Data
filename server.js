@@ -15,8 +15,6 @@ app.listen(PORT, () => {
     console.log(`***Server is listening on ${PORT}***`);
 });
 
-const celebData = [];
-
 //HEADLESS CHROME
 (async () => {
     //INIT PUPPETEER
@@ -45,13 +43,6 @@ const celebData = [];
         return ({name:name, born: data, died: death})
     })
 
-    //RETURN ALL PROMISES 
-    Promise.all(results)
-        .then((complete) => {
-            //console.log(complete) 
-            celebData.push(complete)
-        })
-        .catch((err) => console.log('ERROR :', err))
     //console.log(names)
 
     //ENDPOINTS
@@ -78,7 +69,12 @@ const celebData = [];
     /* GET: ALL CELEB DATA */
     app.get('/all', (req, res) => {
         //console.log(celebData)
-        res.send(celebData)
-        
+        //RETURN ALL PROMISES 
+        Promise.all(results)
+        .then((complete) => {
+            //console.log(complete) 
+            res.send(complete)
+        })
+        .catch((err) => console.log('ERROR :', err))     
     })
 })();
