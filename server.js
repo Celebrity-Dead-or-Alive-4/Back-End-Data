@@ -40,21 +40,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     );
 
     //ASYNC MAP ALL CELEB INFO BY NAME
-    const results = names.slice(0, 10).map(async (name) => { 
-        const page = await browser.newPage();
-        await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
-        const data = await page.evaluate(
-            () => document.querySelector('span .bday') ? 
-                document.querySelector('span .bday').textContent : 
-                null
-        )
-        const death = await page.evaluate(
-            () => Array.from(document.querySelectorAll('body section table tbody tr th'))
-                .find(th => th.textContent.includes('Died'))
-        )
-        return ({name:name, born: data, died: death})  
-    })
-    const results2 = names.slice(11, 21).map(async (name) => { 
+    const results = names.slice(0, 15).map(async (name) => { 
         const page = await browser.newPage();
         await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
         const data = await page.evaluate(
@@ -70,7 +56,6 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     })
 
     workQueue.add(results)
-    workQueue.add(results2)
 
     //!ENDPOINTS
     /* GET: COMEDIAN CELEBS */
@@ -99,19 +84,13 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         //START PROCESS
         workQueue.process(async (job) => {
             return Promise.all(results)
-            .then((complete) => {
-                return Promise.all(results2)
-                .then((complete2) => {
-                    res.send(complete, complete2)
-                })
-            })
-            .then(complete => res.send({data: complete, job: job.id}))
-            .catch(err => console.log('ERROR: ', err))
+                .then(complete => res.send({data: complete, job: job.id}))
+                .catch(err => console.log('ERROR: ', err))
         })
         //RETURN DATA ON COMPLETION
         workQueue.on('completed', (job, data) => {
         console.log(`Job completed with result ${data}`);
-        //res.send({data: data})
+        res.send({data: data})
         })
     })
 })();
