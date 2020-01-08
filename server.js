@@ -74,7 +74,7 @@ let workQueue = new Queue('work', REDIS_URL);
     });
 
     /* GET: ALL CELEB DATA */
-    app.get('/all', (req, res) => {
+    app.get('/all', async (req, res) => {
         //console.log(celebData)
         //RETURN ALL PROMISES FROM QUE
         let job = await workQueue.add({
