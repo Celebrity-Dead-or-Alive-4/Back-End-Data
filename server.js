@@ -40,7 +40,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     );
 
     //ASYNC MAP ALL CELEB INFO BY NAME
-    const results = names.slice(0, 15).map(async (name) => { 
+    const results = names.slice(0, 10).map(async (name) => { 
         const page = await browser.newPage();
         await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
         const data = await page.evaluate(
@@ -87,10 +87,14 @@ let workers = process.env.WEB_CONCURRENCY || 2;
                 .then(complete => res.send({data: complete, job: job.id}))
                 .catch(err => console.log('ERROR: ', err))
         })
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err))
         //RETURN DATA ON COMPLETION
         workQueue.on('completed', (job, data) => {
         console.log(`Job completed with result ${data}`);
         res.send({data: data})
         })
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err))
     })
 })();
