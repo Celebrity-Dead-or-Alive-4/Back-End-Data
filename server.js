@@ -34,7 +34,7 @@ const celebData = [];
     //ASYNC MAP ALL CELEB INFO BY NAME
     const results = names.slice(0, 100).map(async (name) => { 
         const page = await browser.newPage();
-        console.log(name)
+        //jeroconsole.log(name)
         await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
         const data = await page.evaluate(
             () => document.querySelector('span .bday') ? document.querySelector('span .bday').textContent : null
@@ -48,7 +48,7 @@ const celebData = [];
     //RETURN ALL PROMISES 
     Promise.all(results)
         .then((complete) => {
-            console.log(complete) 
+            //console.log(complete) 
             celebData.push(complete)
         })
         .catch((err) => console.log('ERROR :', err))
@@ -76,7 +76,7 @@ const celebData = [];
     });
 
     /* GET: ALL CELEB DATA */
-    app.get('/all', async (req, res) => {
+    app.get('/all', (req, res) => {
         //console.log(celebData)
         res.send(celebData)
         
