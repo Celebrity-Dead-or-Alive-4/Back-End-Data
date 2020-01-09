@@ -83,7 +83,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         //console.log(celebData)
         //START PROCESS
         workQueue.process(async (job) => {
-            return Promise.all()
+            return await Promise.all()
             .then(complete => res.send({data: complete, job: job.id}))
             .catch(err => console.log('ERROR: ', err))
         })
