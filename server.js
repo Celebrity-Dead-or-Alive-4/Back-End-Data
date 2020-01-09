@@ -112,7 +112,5 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         console.log(`Job completed with result ${data}`);
         res.send({data: data})
         })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err))
     })
 })();
