@@ -5,9 +5,6 @@ const bodyParser = require('body-parser');
 const CORS = require('cors');
 //PUPPETEER 🐱‍💻
 const puppeteer = require('puppeteer');
-//BULL & THRONG 🐂
-let Queue = require("bull");
-let throng = require('throng');
 //MIDDLEWARE
 app.use(bodyParser.json());
 app.use(CORS());
@@ -17,13 +14,6 @@ const PORT = process.env.PORT || 8000
 app.listen(PORT, () => {
     console.log(`***Server is listening on ${PORT}***`);
 });
-
-//WEB PROCESS
-let REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
-let workQueue = new Queue('work', REDIS_URL);
-
-//WORKERS
-let workers = process.env.WEB_CONCURRENCY || 2;
 
 //HEADLESS CHROME
 (async () => {
@@ -55,8 +45,6 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         return ({name:name, born: data, died: death})  
     })
 
-    workQueue.add(results)
-
     //!ENDPOINTS
     /* GET: COMEDIAN CELEBS */
     app.get('/comedians', (req, res) => {
@@ -80,21 +68,9 @@ let workers = process.env.WEB_CONCURRENCY || 2;
 
     /* GET: ALL CELEB DATA */
     app.get('/all', async (req, res) => {
-        //console.log(celebData)
         //START PROCESS
-        workQueue.process(async (job) => {
-            return Promise.all(results)
-            .then(complete => res.send({data: complete, job: job.id}))
-            .catch(err => console.log('ERROR: ', err))
-        })
+        return Promise.all(results)
+        .then(complete => res.send({data: complete, job: job.id}))
         .catch(err => console.log('ERROR: ', err))
-        //RETURN DATA ON COMPLETION
-        workQueue.on('completed', (job, data) => {
-        console.log(`Job completed with result ${data}`);
-        res.send({data: data})
-        })
-    })
-    workQueue.on('global:completed', jobId => {
-        console.log(`Job with id ${jobId} has been completed`);
     })
 })();
