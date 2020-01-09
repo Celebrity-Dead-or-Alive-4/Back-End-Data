@@ -54,8 +54,23 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         )
         return ({name:name, born: data, died: death})  
     })
+    const results2 = names.slice(11, 21).map(async (name) => { 
+        const page = await browser.newPage();
+        await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
+        const data = await page.evaluate(
+            () => document.querySelector('span .bday') ? 
+                document.querySelector('span .bday').textContent : 
+                null
+        )
+        const death = await page.evaluate(
+            () => Array.from(document.querySelectorAll('body section table tbody tr th'))
+                .find(th => th.textContent.includes('Died'))
+        )
+        return ({name:name, born: data, died: death})  
+    })
 
     workQueue.add(results)
+    workQueue.add(results2)
 
     //!ENDPOINTS
     /* GET: COMEDIAN CELEBS */
@@ -82,13 +97,16 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     app.get('/all', async (req, res) => {
         //console.log(celebData)
         //START PROCESS
-        workQueue.process(async (job) => {
+        workQueue.process('results', async (job) => {
             return Promise.all(results)
                 .then(complete => res.send({data: complete, job: job.id}))
                 .catch(err => console.log('ERROR: ', err))
         })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err))
+        workQueue.process('results2', async (job) => {
+            return Promise.all(results)
+                .then(complete => res.send({data: complete, job: job.id}))
+                .catch(err => console.log('ERROR: ', err))
+        })
         //RETURN DATA ON COMPLETION
         workQueue.on('completed', (job, data) => {
         console.log(`Job completed with result ${data}`);
