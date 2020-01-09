@@ -108,7 +108,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         res.send({data: data})
         })
     })
-    queue.on('global:completed', jobId => {
+    workQueue.on('global:completed', jobId => {
         console.log(`Job with id ${jobId} has been completed`);
     })
 })();
