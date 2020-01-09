@@ -30,7 +30,7 @@ app.listen(PORT, () => {
     );
 
     //ASYNC MAP ALL CELEB INFO BY NAME
-    const results = names.slice(0, 10).map(async (name) => { 
+    const results = names.slice(30, 40).map(async (name) => { 
         const page = await browser.newPage();
         await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
         const data = await page.evaluate(
@@ -70,7 +70,7 @@ app.listen(PORT, () => {
     app.get('/all', async (req, res) => {
         //START PROCESS
         return Promise.all(results)
-        .then(complete => res.send({data: complete, job: job.id}))
+        .then(complete => res.send({data: complete}))
         .catch(err => console.log('ERROR: ', err))
     })
 })();
