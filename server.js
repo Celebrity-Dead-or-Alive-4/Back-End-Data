@@ -98,10 +98,10 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         //console.log(celebData)
         //START PROCESS
         workQueue.process(async (job) => {
-            return Promise.all()
-                .then(complete => {({data: complete, job: job.id})})
-                .catch(err => console.log('ERROR: ', err))
+            return Promise.all(job)
         })
+        .then(complete => {({data: complete, job: job.id})})
+        .catch(err => console.log('ERROR: ', err))
         //RETURN DATA ON COMPLETION
         workQueue.on('completed', (job, data) => {
         console.log(`Job completed with result ${data}`);
