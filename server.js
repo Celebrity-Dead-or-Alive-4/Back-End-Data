@@ -70,7 +70,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     })
 
     let job = await workQueue.add('result1', results)
-    let job = await workQueue.add('result2', results2)
+    let job2 = await workQueue.add('result2', results2)
 
     //!ENDPOINTS
     /* GET: COMEDIAN CELEBS */
