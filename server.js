@@ -69,8 +69,8 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         return ({name:name, born: data, died: death})  
     })
 
-    let job = await workQueue.add('result1', results)
-    let job2 = await workQueue.add('result2', results2)
+    workQueue.add(results)
+    workQueue.add(results2)
 
     //!ENDPOINTS
     /* GET: COMEDIAN CELEBS */
@@ -97,7 +97,7 @@ let workers = process.env.WEB_CONCURRENCY || 2;
     app.get('/all', async (req, res) => {
         //console.log(celebData)
         //START PROCESS
-        workQueue.process('results1', async (job) => {
+        workQueue.process(async (job) => {
             return Promise.all(job)
             .then(complete => {({data: complete, job: job.id})})
         })
@@ -107,5 +107,8 @@ let workers = process.env.WEB_CONCURRENCY || 2;
         console.log(`Job completed with result ${data}`);
         res.send({data: data})
         })
+    })
+    queue.on('global:completed', jobId => {
+        console.log(`Job with id ${jobId} has been completed`);
     })
 })();
