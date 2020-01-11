@@ -7,14 +7,16 @@
     "body-parser": "^1.19.0",
     "bull": "^3.12.1",
     "cors": "^2.8.5",
+    "cross-env": "^6.0.3",
     "express": "^4.17.1",
+    "jest": "^24.9.0",
     "puppeteer": "^2.0.0",
     "supertest": "^4.0.2",
     "throng": "^4.0.0"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cross-env DB_ENV=testing jest --watch",
     "start": "node server.js"
   },
   "repository": {
