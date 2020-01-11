@@ -30,7 +30,7 @@ app.listen(PORT, () => {
     );
 
     //ASYNC MAP ALL CELEB INFO BY NAME
-    const results = names.slice(70, 80).map(async (name) => { 
+    const results = names.slice(80, 90).map(async (name) => { 
         const page = await browser.newPage();
         await page.goto(`https://en.wikipedia.org/api/rest_v1/page/html/${name}?redirect=false`)
         const data = await page.evaluate(
